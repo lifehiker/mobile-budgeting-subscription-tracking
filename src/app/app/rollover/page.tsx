@@ -4,10 +4,12 @@ import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui";
 import { useAppStore } from "@/components/app-store";
 import { money } from "@/lib/currency";
-import { spentForEnvelope } from "@/lib/data";
+import { monthKey, spentForEnvelope } from "@/lib/data";
 
 export default function RolloverPage() {
   const { state, rolloverMonth, updateEnvelope } = useAppStore();
+  const currentMonth = monthKey();
+  const monthTransactions = state.transactions.filter((txn) => txn.date.startsWith(currentMonth));
   return (
     <div className="space-y-5">
       <div>
@@ -16,7 +18,7 @@ export default function RolloverPage() {
       </div>
       <div className="card space-y-3 p-4">
         {state.envelopes.filter((env) => !env.archived).map((env) => {
-          const remaining = env.allocated - spentForEnvelope(env.id, state.transactions);
+          const remaining = env.allocated - spentForEnvelope(env.id, monthTransactions, currentMonth);
           return (
             <label key={env.id} className="flex items-center justify-between gap-3 rounded-lg bg-mist p-3">
               <span>

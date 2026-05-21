@@ -39,6 +39,14 @@ This audit is completed after implementation and verification. It maps the PRD t
 ## Deployment
 - Production Dockerfile with standalone Next output: `Dockerfile`.
 - Docker ignore: `.dockerignore`.
+- Setup and environment documentation: `README.md`, `.env.example`.
+
+## Verification
+- `npm run build` passes.
+- Dev server starts successfully on `http://localhost:3001` because port 3000 was already occupied.
+- Primary public/app routes and guarded API fallback endpoints returned successful responses.
+- Mobile and desktop screenshots were reviewed for homepage, dashboard, add-expense, and reports views.
+- `docker build .` was attempted but could not connect to the Docker socket due host permissions.
 
 ## Deferred External-Credential Items
 - Real magic-link email, Google OAuth, Stripe Checkout/customer portal, production database persistence, and Resend reminder delivery require credentials listed in `HUMAN_INPUT_NEEDED.md`.

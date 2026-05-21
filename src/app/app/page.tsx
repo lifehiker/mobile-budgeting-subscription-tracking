@@ -6,17 +6,19 @@ import { ArrowUpRight, Bell, Plus, WalletCards } from "lucide-react";
 import { StatCard } from "@/components/ui";
 import { useAppStore } from "@/components/app-store";
 import { money } from "@/lib/currency";
-import { spentForEnvelope, upcomingSubscriptions } from "@/lib/data";
+import { monthKey, spentForEnvelope, upcomingSubscriptions } from "@/lib/data";
 
 export default function DashboardPage() {
   const { state } = useAppStore();
   const activeEnvelopes = state.envelopes.filter((env) => !env.archived);
-  const spent = state.transactions.reduce((sum, txn) => sum + txn.baseAmount, 0);
+  const currentMonth = monthKey();
+  const monthTransactions = state.transactions.filter((txn) => txn.date.startsWith(currentMonth));
+  const spent = monthTransactions.reduce((sum, txn) => sum + txn.baseAmount, 0);
   const budgeted = activeEnvelopes.reduce((sum, env) => sum + env.allocated, 0);
-  const remaining = activeEnvelopes.reduce((sum, env) => sum + Math.max(0, env.allocated - spentForEnvelope(env.id, state.transactions)), 0);
+  const remaining = activeEnvelopes.reduce((sum, env) => sum + Math.max(0, env.allocated - spentForEnvelope(env.id, monthTransactions, currentMonth)), 0);
   const upcoming = upcomingSubscriptions(state.subscriptions);
   const top = activeEnvelopes
-    .map((env) => ({ ...env, spent: spentForEnvelope(env.id, state.transactions) }))
+    .map((env) => ({ ...env, spent: spentForEnvelope(env.id, monthTransactions, currentMonth) }))
     .sort((a, b) => b.spent - a.spent)
     .slice(0, 4);
 

@@ -5,12 +5,14 @@ import { Archive, Plus } from "lucide-react";
 import { Button, FieldLabel } from "@/components/ui";
 import { useAppStore } from "@/components/app-store";
 import { money } from "@/lib/currency";
-import { spentForEnvelope } from "@/lib/data";
+import { monthKey, spentForEnvelope } from "@/lib/data";
 
 export default function EnvelopesPage() {
   const { state, addEnvelope, archiveEnvelope, updateEnvelope, addAllocation } = useAppStore();
   const [error, setError] = useState("");
   const [form, setForm] = useState({ name: "", monthlyBudget: 100, color: "#70a288", carryover: true });
+  const currentMonth = monthKey();
+  const monthTransactions = state.transactions.filter((txn) => txn.date.startsWith(currentMonth));
 
   function submit() {
     const message = addEnvelope(form);
@@ -39,7 +41,7 @@ export default function EnvelopesPage() {
         </div>
         <div className="space-y-3">
           {state.envelopes.filter((env) => !env.archived).map((env) => {
-            const spent = spentForEnvelope(env.id, state.transactions);
+            const spent = spentForEnvelope(env.id, monthTransactions, currentMonth);
             const remaining = env.allocated - spent;
             return (
               <div key={env.id} className="card p-4">

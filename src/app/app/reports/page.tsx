@@ -3,14 +3,16 @@
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useAppStore } from "@/components/app-store";
 import { money } from "@/lib/currency";
-import { spentForEnvelope } from "@/lib/data";
+import { monthKey, spentForEnvelope } from "@/lib/data";
 
 export default function ReportsPage() {
   const { state } = useAppStore();
+  const currentMonth = monthKey();
+  const monthTransactions = state.transactions.filter((txn) => txn.date.startsWith(currentMonth));
   const envelopeData = state.envelopes.filter((env) => !env.archived).map((env) => ({
     name: env.name,
     budgeted: env.allocated,
-    spent: spentForEnvelope(env.id, state.transactions)
+    spent: spentForEnvelope(env.id, monthTransactions, currentMonth)
   }));
   const recurringByMonth = state.subscriptions.reduce<Record<string, number>>((acc, sub) => {
     const key = sub.nextDueDate.slice(0, 7);
