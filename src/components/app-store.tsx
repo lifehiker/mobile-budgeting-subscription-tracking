@@ -28,15 +28,21 @@ type Store = {
 
 const StoreContext = createContext<Store | null>(null);
 
+const INITIAL_STATE: BudgetState = {
+  user: { id: "", name: "", email: "", baseCurrency: "USD", plan: "free", onboarded: false, reminderThreeDay: true, reminderSameDay: false, createdAt: "" },
+  envelopes: [],
+  transactions: [],
+  subscriptions: [],
+  rollovers: [],
+};
+
 export function AppStoreProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<BudgetState>(() => demoState());
+  const [state, setState] = useState<BudgetState>(INITIAL_STATE);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const saved = window.localStorage.getItem(storageKey);
-    if (saved) {
-      setState(JSON.parse(saved) as BudgetState);
-    }
+    setState(saved ? (JSON.parse(saved) as BudgetState) : demoState());
     setReady(true);
   }, []);
 
