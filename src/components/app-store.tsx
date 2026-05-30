@@ -41,8 +41,12 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const saved = window.localStorage.getItem(storageKey);
-    setState(saved ? (JSON.parse(saved) as BudgetState) : demoState());
+    try {
+      const saved = window.localStorage.getItem(storageKey);
+      setState(saved ? (JSON.parse(saved) as BudgetState) : demoState());
+    } catch {
+      setState(demoState());
+    }
     setReady(true);
   }, []);
 
