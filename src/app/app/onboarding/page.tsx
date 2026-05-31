@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, FieldLabel } from "@/components/ui";
 import { useAppStore } from "@/components/app-store";
@@ -13,6 +13,8 @@ export default function OnboardingPage() {
   const { completeOnboarding } = useAppStore();
   const [currency, setCurrency] = useState<CurrencyCode>("USD");
   const [selected, setSelected] = useState(envelopeTemplates.map((item) => ({ ...item, enabled: true, carryover: item.name !== "Rent" })));
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   function submit() {
     const envelopes = selected.filter((item) => item.enabled).slice(0, 8);
@@ -27,7 +29,7 @@ export default function OnboardingPage() {
         <p className="text-sm font-semibold text-moss">Setup</p>
         <h1 className="text-3xl font-bold">Build your starter budget</h1>
       </div>
-      <div className="card space-y-5 p-4">
+      {mounted && <div className="card space-y-5 p-4">
         <div className="space-y-2">
           <FieldLabel>Base currency</FieldLabel>
           <select className="field" value={currency} onChange={(event) => setCurrency(event.target.value as CurrencyCode)}>
@@ -52,7 +54,7 @@ export default function OnboardingPage() {
           ))}
         </div>
         <Button onClick={submit} className="w-full" disabled={selected.filter((item) => item.enabled).length < 3}>Finish setup</Button>
-      </div>
+      </div>}
     </div>
   );
 }
