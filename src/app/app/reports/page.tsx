@@ -1,10 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Component, useEffect, useState, type ReactNode } from "react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { useAppStore } from "@/components/app-store";
 import { money } from "@/lib/currency";
 import { monthKey, spentForEnvelope } from "@/lib/data";
+
+class ChartErrorBoundary extends Component<{ children: ReactNode }, { error: boolean }> {
+  state = { error: false };
+  static getDerivedStateFromError() { return { error: true }; }
+  render() { return this.state.error ? <p className="text-sm text-ink/60">Chart unavailable.</p> : this.props.children; }
+}
 
 export default function ReportsPage() {
   const { state } = useAppStore();
@@ -35,16 +41,18 @@ export default function ReportsPage() {
           <h2 className="font-bold">Budgeted vs spent</h2>
           <div className="mt-4 h-72">
             {mounted && (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={envelopeData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-                  <YAxis tick={{ fontSize: 12 }} />
-                  <Tooltip formatter={(value) => money(Number(value), state.user.baseCurrency)} />
-                  <Bar dataKey="budgeted" fill="#70a288" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="spent" fill="#e86f51" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+              <ChartErrorBoundary>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={envelopeData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                    <YAxis tick={{ fontSize: 12 }} />
+                    <Tooltip formatter={(value) => money(Number(value), state.user.baseCurrency)} />
+                    <Bar dataKey="budgeted" fill="#70a288" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="spent" fill="#e86f51" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartErrorBoundary>
             )}
           </div>
         </div>
@@ -52,15 +60,17 @@ export default function ReportsPage() {
           <h2 className="font-bold">Recurring charges</h2>
           <div className="mt-4 h-72">
             {mounted && (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={recurringData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" tick={{ fontSize: 12 }} />
-                  <YAxis tick={{ fontSize: 12 }} />
-                  <Tooltip formatter={(value) => money(Number(value), state.user.baseCurrency)} />
-                  <Bar dataKey="amount" fill="#2f5d50" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+              <ChartErrorBoundary>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={recurringData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                    <YAxis tick={{ fontSize: 12 }} />
+                    <Tooltip formatter={(value) => money(Number(value), state.user.baseCurrency)} />
+                    <Bar dataKey="amount" fill="#2f5d50" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartErrorBoundary>
             )}
           </div>
         </div>
