@@ -9,7 +9,8 @@ import { money } from "@/lib/currency";
 import { monthKey, spentForEnvelope, upcomingSubscriptions } from "@/lib/data";
 
 export default function DashboardPage() {
-  const { state } = useAppStore();
+  const { state, ready } = useAppStore();
+  if (!ready) return <p className="p-4 text-ink/60">Loading your budget…</p>;
   const activeEnvelopes = state.envelopes.filter((env) => !env.archived);
   const currentMonth = monthKey();
   const monthTransactions = state.transactions.filter((txn) => txn.date.startsWith(currentMonth));
