@@ -5,7 +5,8 @@ import { money } from "@/lib/currency";
 import { monthKey, spentForEnvelope } from "@/lib/data";
 
 export default function ReportsPage() {
-  const { state } = useAppStore();
+  const { state, ready } = useAppStore();
+  if (!ready) return <p className="p-4 text-ink/60">Loading reports…</p>;
   const currentMonth = monthKey();
   const monthTransactions = state.transactions.filter((txn) => txn.date.startsWith(currentMonth));
   const envelopeData = state.envelopes.filter((env) => !env.archived).map((env) => ({
