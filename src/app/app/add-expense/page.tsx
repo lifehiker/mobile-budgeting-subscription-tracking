@@ -10,8 +10,9 @@ import type { CurrencyCode } from "@/lib/types";
 
 export default function AddExpensePage() {
   const router = useRouter();
-  const { state, addTransaction } = useAppStore();
+  const { state, ready, addTransaction } = useAppStore();
   const [error, setError] = useState("");
+  if (!ready) return <p className="p-4 text-ink/60">Loading…</p>;
   const [form, setForm] = useState({
     amount: "",
     currency: state.user.baseCurrency,
