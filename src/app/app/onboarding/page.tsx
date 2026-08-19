@@ -11,9 +11,9 @@ import type { CurrencyCode } from "@/lib/types";
 export default function OnboardingPage() {
   const router = useRouter();
   const { completeOnboarding, ready } = useAppStore();
-  if (!ready) return <p className="p-4 text-ink/60">Loading…</p>;
   const [currency, setCurrency] = useState<CurrencyCode>("USD");
   const [selected, setSelected] = useState(envelopeTemplates.map((item) => ({ ...item, enabled: true, carryover: item.name !== "Rent" })));
+  if (!ready) return <p className="p-4 text-ink/60">Loading…</p>;
   function submit() {
     const envelopes = selected.filter((item) => item.enabled).slice(0, 8);
     if (envelopes.length < 3) return;

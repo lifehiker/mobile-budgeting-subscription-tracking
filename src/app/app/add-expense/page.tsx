@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Save } from "lucide-react";
 import { Button, FieldLabel } from "@/components/ui";
@@ -12,7 +12,6 @@ export default function AddExpensePage() {
   const router = useRouter();
   const { state, ready, addTransaction } = useAppStore();
   const [error, setError] = useState("");
-  if (!ready) return <p className="p-4 text-ink/60">Loading…</p>;
   const [form, setForm] = useState({
     amount: "",
     currency: state.user.baseCurrency,
@@ -22,6 +21,19 @@ export default function AddExpensePage() {
     note: "",
     recurring: false
   });
+
+  // hooks must run on every render, so the form is created before the ready
+  // guard below; adopt the persisted defaults once the store has loaded
+  useEffect(() => {
+    if (!ready) return;
+    setForm((prev) => ({
+      ...prev,
+      currency: prev.currency || state.user.baseCurrency,
+      envelopeId: prev.envelopeId || (state.envelopes[0]?.id ?? "")
+    }));
+  }, [ready, state.user.baseCurrency, state.envelopes]);
+
+  if (!ready) return <p className="p-4 text-ink/60">Loading…</p>;
 
   function submit() {
     const message = addTransaction({
